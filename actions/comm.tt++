@@ -33,7 +33,7 @@
         #local {cmsg} {<169>}
     };
 
-    #format {msg} {$cmsg%-8s %s: %s} {$canale<g15>:} {$da_a} {$cmsg$testo<g15>};
+    #format {msg} {$cmsg%-9s %s: %s} {$canale<g15>:} {$da_a} {$cmsg$testo<g15>};
     comm_window_show all $msg;
     #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa"}
     {
