@@ -9,7 +9,7 @@
         #local {da_a} {Da $text[soggetto]<g15>}
     };
     #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa"} {
-        #local {da_a} {$da_a a $text[oggetto_ansi]<g15>}
+        #local {da_a} {$da_a a $text[oggetto]<g15>}
     };
     #if {"$canale" == "dico"} {
         #local {cmsg} {<179>}
