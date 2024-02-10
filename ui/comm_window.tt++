@@ -1,0 +1,125 @@
+#VARIABLE {comm_window}
+{
+    {active} {all}
+    {botcol} {-$screen_right_width}
+    {botrow} {6}
+    {offset} {1}
+    {tab}
+    {
+        {all} {}
+        {grp} {}
+        {msg} {}
+        {pub} {}
+    }
+    {topcol} {1}
+    {toprow} {1}
+    {unread}
+    {
+        {all} {0}
+        {grp} {0}
+        {msg} {0}
+        {pub} {0}
+    }
+};
+
+#alias {comm_window_reset}
+{
+    #draw blanked box $comm_window[toprow] $comm_window[topcol] $comm_window[botrow] -1;
+    comm_window_draw_tabs;
+};
+
+#ALIAS {comm_window_scroll_up}
+{
+    #if {$comm_window[offset] < &comm_window[tab][%0][]}
+    {
+        #math comm_window[offset] $comm_window[offset] + 1;
+        comm_window_draw_data $comm_window[active]
+    }
+};
+
+#ALIAS {comm_window_scroll_down}
+{
+    #if {$comm_window[offset] > 1}
+    {
+        #math comm_window[offset] $comm_window[offset] - 1;
+        comm_window_draw_data $comm_window[active]
+    }
+};
+
+#BUTTON {$comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol] SCROLLED MOUSE WHEEL UP}
+{
+    comm_window_scroll_up $comm_window[active]
+};
+
+#BUTTON {$comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol] SCROLLED MOUSE WHEEL DOWN}
+{
+    comm_window_scroll_down
+};
+
+#FUNCTION {comm_window_square}
+{
+    #return $comm_window[toprow]+1 $comm_window[topcol]+1 $comm_window[botrow]-1 $comm_window[botcol]-1
+};
+
+#FUNCTION {comm_window_border}
+{
+    #return $comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol]-1
+};
+
+#ALIAS {comm_window_draw_data}
+{
+    #draw tile @comm_window_square{} $comm_window[tab][%1][-$comm_window[offset]-10..-$comm_window[offset]];
+    comm_window_draw_tabs
+};
+
+#ALIAS {comm_window_show %1 %2}
+{
+    #list comm_window[tab][%1] ins -1 {%2};
+    #if {{%1} === {$comm_window[active]}}
+    {
+        comm_window_draw_data %1
+    };
+    #elseif {$comm_window[unread][%1] == 0}
+    {
+        #variable comm_window[unread][%1] 1;
+        comm_window_draw_tabs
+    }
+};
+
+#ALIAS {comm_window_draw_tabs}
+{
+    #draw green rounded box @comm_window_border{};
+    #local short {};
+    #local index {};
+    #loop {1} {&comm_window[tab][]} {index}
+    {
+        #local tab *comm_window[tab][+$index];
+        #if {{$comm_window[active]} === {$tab}}
+        {
+            #format short <138>%.6s $tab
+        };
+        #elseif {$comm_window[unread][$tab] == 1}
+        {
+            #format short <258>%.6s $tab
+        };
+        #else
+        {
+            #format short <268>%.6s $tab
+        };
+        #line ignore #showme {\e]68;2;TAB;comm_window_tab_click $tab\a\e[4;24m$short\e[24m} {$comm_window[toprow]} {$comm_window[topcol] - 5 + $index * 7}
+    }
+};
+
+#ALIAS {comm_window_tab_click}
+{
+    #variable comm_window[active] %0;
+    #variable comm_window[unread][%0] 0;
+    #variable comm_window[offset] 1;
+    comm_window_draw_tabs;
+    comm_window_draw_data %0
+}:
+
+#EVENT {PRESSED SECURE LINK TAB MOUSE BUTTON ONE}
+{
+    %4
+};

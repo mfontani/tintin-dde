@@ -1,0 +1,50 @@
+#EVENT {IAC SB GMCP Comm.Channel.Text IAC SE}
+{
+    #variable gmcp[channel] {%0};
+    #local text {%0};
+    #local {testo} {$text[testo]<g15>};
+    #local {canale} {$text[canale]};
+    #local {da_a} {};
+    #if {"$text[soggetto]"!=""} {
+        #local {da_a} {Da $text[soggetto]<g15>}
+    };
+    #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa"} {
+        #local {da_a} {$da_a a $text[oggetto_ansi]<g15>}
+    };
+    #if {"$canale" == "dico"} {
+        #local {cmsg} {<179>}
+    };
+    #elseif {"$canale" == "gruppo"} {
+        #local {cmsg} {<149>}
+    };
+    #elseif {"$canale" == "immtalk"} {
+        #local {cmsg} {<129>}
+    };
+    #elseif {"$canale" == "parla"} {
+        #local {cmsg} {<139>}
+    };
+    #elseif {"$canale" == "urlo" || "$canale" == "grido"} {
+        #local {cmsg} {<119>}
+    };
+    #elseif {"$canale" == "dicoa"} {
+        #local {cmsg} {<159>}
+    };
+    #else {
+        #local {cmsg} {<169>}
+    };
+
+    #format {msg} {$cmsg%-8s %s: %s} {$canale<g15>:} {$da_a} {$cmsg$testo<g15>};
+    comm_window_show all $msg;
+    #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa"}
+    {
+        comm_window_show msg $msg
+    };
+    #elseif {"$canale" == "gruppo"}
+    {
+        comm_window_show grp $msg
+    };
+    #else
+    {
+        comm_window_show pub $msg
+    };
+};

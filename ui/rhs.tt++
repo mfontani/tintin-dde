@@ -1,0 +1,406 @@
+#nop configura i colori:
+#var {ui_colors} {
+    {tab} {
+        {active}   {<FFFFFA5>}
+        {empty}    {<F6272A4>}
+        {inactive} {<F8BE9FD>}
+    }
+    {magie} {
+        {header} {<FF1FA8C>}
+        {none}   {<g07>}
+        {dash}   {<g05>}
+        {nome}   {<g23>}
+        {durata} {
+            {bassa}     {<F922>}
+            {default}   {<g18>}
+        }
+    }
+    {memo} {
+        {header} {<FF1FA8C>}
+        {none}   {<g07>}
+        {nome}   {<g23>}
+        {studio} {<F8BE9FD>}
+        {memo}   {<FBD93F9>}
+        {max}    {<FFF79C6>}
+    }
+    {gruppo} {
+        {header} {<FBD93F9>}
+        {nome} {
+            {pg}        {<FFFFFA5>}
+            {mob}       {<F9C9EB5>}
+            {gruppo}    {<FD6ACFF>}
+            {classe}    {<FFF79C6>}
+        }
+        {incantesimi} {<F8BE9FD>}
+        {pct} {
+            {over}  {<F2C2>}
+            {high}  {<FFC2>}
+            {mid}   {<FF82>}
+            {low}   {<FD22>}
+        }
+    }
+    {inv} {
+        {idx}   {<g08>}
+        {qty}   {<g12>}
+        {obj}   {<g15>}
+    }
+}
+
+#VARIABLE {dde_ui_rhs}
+{
+    {active} {0}
+    {toprow} {1}
+    {topcol} {-$screen_right_width}
+    {botrow} {-5}
+    {botcol} {-1}
+    {tab}
+    {
+        {0} {
+            {name} {Equip}
+            {data} {}
+        }
+        {1} {
+            {name} {Inv}
+            {data} {}
+        }
+        {2} {
+            {name} {Magie}
+            {data} {}
+        }
+        {3} {
+            {name} {Gruppo}
+            {data} {}
+        }
+        {4} {
+            {name} {Memo}
+            {data} {}
+        }
+    }
+};
+
+#alias {dde_ui_rhs_tab_click}
+{
+    #variable dde_ui_rhs[active] %0;
+    dde_ui_rhs_draw_data %0
+};
+
+#ALIAS {dde_ui_rhs_draw_data}
+{
+    dde_ui_rhs_refresh_eq;
+    dde_ui_rhs_refresh_inv;
+    dde_ui_rhs_refresh_magie;
+    dde_ui_rhs_refresh_gruppo;
+    dde_ui_rhs_refresh_memo;
+    #draw tile $dde_ui_rhs[toprow]+1 $dde_ui_rhs[topcol]+1 $dde_ui_rhs[botrow]-1 $dde_ui_rhs[botcol]-1 $dde_ui_rhs[tab][%1][data];
+    dde_ui_rhs_draw_tabs
+};
+
+#alias {dde_ui_rhs_reset}
+{
+    #draw tubed box $dde_ui_rhs[toprow] $dde_ui_rhs[topcol] $dde_ui_rhs[botrow] $dde_ui_rhs[botcol] {};
+    dde_ui_rhs_draw_data $dde_ui_rhs[active]
+};
+
+#ALIAS {dde_ui_rhs_draw_tabs}
+{
+    #draw tubed box $dde_ui_rhs[toprow] $dde_ui_rhs[topcol] $dde_ui_rhs[botrow] $dde_ui_rhs[botcol];
+    #local short {};
+    #local index {};
+    #loop {0} {&dde_ui_rhs[tab][]} {index}
+    {
+        #if {{$dde_ui_rhs[active]} === {$index}}
+        {
+            #format short $ui_colors[tab][active]%.8s $dde_ui_rhs[tab][$index][name]
+        };
+        #elseif {"$dde_ui_rhs[tab][$index][data]" == ""}
+        {
+            #format short $ui_colors[tab][empty]%.8s $dde_ui_rhs[tab][$index][name]
+        };
+        #else
+        {
+            #format short $ui_colors[tab][inactive]%.8s $dde_ui_rhs[tab][$index][name]
+        };
+        #line ignore #showme {\e]68;2;TAB;dde_ui_rhs_tab_click $index\a\e[4;24m$short\e[24m} {$dde_ui_rhs[toprow]} {$dde_ui_rhs[topcol] + 2 + $index * 9}
+    }
+};
+
+#alias {dde_ui_rhs_refresh_eq}
+{
+    #local linefmt {};
+    #local maxw {};
+    #math maxw {$screen_right_width - 12};
+    #format {linefmt} {%%%s%%%-9s %%%s%%%.%ds<g15>} {$maxw};
+    #list dde_ui_rhs[tab][0][data] clear;
+    #if {&gmcp[char][items][equip][] > 0} {
+        #loop {1} {&{gmcp[char][items][equip][]}} {i} {
+            #var oggetto {$gmcp[char][items][equip][$i][oggetto_ansi]};
+            #local equip {};
+            #if {"$oggetto" == "nulla"} {
+                #format {equip} {$linefmt} {<g07>} {$gmcp[char][items][equip][$i][doveshort]} {<g05>} {$gmcp[char][items][equip][$i][oggetto_ansi]};
+            };
+            #else {
+                #format {equip} {$linefmt} {<g15>} {$gmcp[char][items][equip][$i][doveshort]} {<g15>} {$gmcp[char][items][equip][$i][oggetto]};
+            };
+            #list dde_ui_rhs[tab][0][data] add {$equip}
+        }
+    };
+    #list dde_ui_rhs[tab][0][data] collapse {\n}
+};
+
+#function {dde_ui_rhs_add_obj} {
+    #local lpad {%1};
+    #local indice {%2};
+    #local totale {%3};
+    #local oggetto {$%4};
+    #local lpadlen {};
+    #format lpadlen {%L} {$lpad};
+    #local linefmt {};
+    #local maxw {};
+    #local obj {};
+    #local lpadfixed {$lpad};
+    #if {$lpadlen > 0} {
+        #local lpadprefix {};
+        #math lpadprefix {$lpadlen - 1};
+        #if {$lpadprefix > 0} {
+            #local lpadfmt {};
+            #format lpadfmt {%%%-%ds↳} {$lpadprefix};
+            #format lpadfixed {$lpadfmt} { };
+        } {
+            #format lpadfixed {↳};
+        }
+    };
+    #if {"$oggetto[quantita]"=="" || "$oggetto[quantita]"=="1"}
+    {
+        #nop lpad + 2 + width spazi prima della stringa prima del nome obj;
+        #math maxw {$screen_right_width - 2 - $lpadlen - 6};
+        #format {linefmt} {$ui_colors[inv][idx]%%%s%%%2d/%%%-2d $ui_colors[inv][obj]%%%.%ds} {$maxw};
+        #format {obj} {$linefmt} {$lpadfixed} {$indice} {$totale} {$oggetto[oggetto]};
+        #list dde_ui_rhs[tab][1][data] add {$obj}
+    };
+    #else
+    {
+        #nop lpad + 2 + width spazi prima della stringa prima del nome obj;
+        #math maxw {$screen_right_width - 2 - $lpadlen - 12};
+        #format {linefmt} {$ui_colors[inv][idx]%%%s%%%2d/%%%-2d $ui_colors[inv][qty]x%%%-2d $ui_colors[inv][obj]%%%.%ds} {$maxw};
+        #format {obj} {$linefmt} {$lpadfixed} {$indice} {$totale} {$oggetto[quantita]} {$oggetto[oggetto]};
+        #list dde_ui_rhs[tab][1][data] add {$obj}
+    };
+    #local {contenuto} {$oggetto[contenuto]};
+    #if {"$contenuto" != ""}
+    {
+        #format {lpad} {%s%s} {\x20} {$lpad};
+        #local {totale} {&contenuto[]};
+        #loop {1} {$totale} {j} {
+            #local x {};
+            #var x @dde_ui_rhs_add_obj{$lpad;$j;$totale;contenuto[$j]}
+        };
+    };
+    #return 1
+};
+
+#alias {dde_ui_rhs_refresh_inv}
+{
+    #list dde_ui_rhs[tab][1][data] clear;
+    #if {&gmcp[char][items][inv][] > 0} {
+        #loop {1} {&{gmcp[char][items][inv][]}} {i} {
+            #local x {};
+            #var x @dde_ui_rhs_add_obj{;$i;&gmcp[char][items][inv][];gmcp[char][items][inv][$i]}
+        }
+    } {
+        #list dde_ui_rhs[tab][1][data] add {Niente.}
+    };
+    #list dde_ui_rhs[tab][1][data] collapse {\n};
+};
+
+#alias {dde_ui_rhs_refresh_magie}
+{
+    #local magia {};
+    #list dde_ui_rhs[tab][2][data] clear;
+    #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][header]Magie:};
+    #if {&gmcp[char][magie][incantesimi][] > 0}
+    {
+        #list gmcp[char][magie][incantesimi] indexate durata;
+        #list gmcp[char][magie][incantesimi] order;
+        #loop {1} {&{gmcp[char][magie][incantesimi][]}} i {
+            #format {magia} {$ui_colors[magie][dash]- $ui_colors[magie][nome]%-35s} {$gmcp[char][magie][incantesimi][$i][nome]};
+            #if {$gmcp[char][magie][incantesimi][$i][durata] < $screen_right_width} {
+                #format {magia} {%s%s} {$magia} {$ui_colors[magie][durata][bassa]$gmcp[char][magie][incantesimi][$i][durata]};
+            } {
+                #format {magia} {%s%s} {$magia} {$ui_colors[magie][durata][default]$gmcp[char][magie][incantesimi][$i][durata]};
+            };
+            #list dde_ui_rhs[tab][2][data] add {$magia}
+        };
+    } {
+        #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][none]Nessuna.}
+    };
+    #if {&gmcp[char][magie][cooldown][] > 0}
+    {
+        #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][header]Cooldown:};
+        #list gmcp[char][magie][cooldown] indexate rimanente;
+        #list gmcp[char][magie][cooldown] order;
+        #loop {1} {&{gmcp[char][magie][cooldown][]}} i {
+            #format {magia} {$ui_colors[magie][dash]- $ui_colors[magie][nome]%-35s} {$gmcp[char][magie][cooldown][$i][nome]};
+            #if {$gmcp[char][magie][cooldown][$i][rimanente] < $screen_right_width} {
+                #format {magia} {%s%s} {$magia} {$ui_colors[magie][durata][bassa]$gmcp[char][magie][cooldown][$i][rimanente]};
+            } {
+                #format {magia} {%s%s} {$magia} {$ui_colors[magie][durata][default]$gmcp[char][magie][cooldown][$i][rimanente]};
+            };
+            #list dde_ui_rhs[tab][2][data] add {$magia}
+        };
+    };
+    #if {&gmcp[char][magie][proprieta][] > 0}
+    {
+        #list gmcp[char][magie][proprieta] indexate nome;
+        #list gmcp[char][magie][proprieta] order;
+        #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][header]Proprieta':};
+        #loop {1} {&{gmcp[char][magie][proprieta][]}} i {
+            #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][dash]- $ui_colors[magie][nome]$gmcp[char][magie][proprieta][$i][nome]}
+        };
+    };
+    #if {&gmcp[char][magie][resistenze][] > 0}
+    {
+        #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][header]Resistenze:};
+        #list gmcp[char][magie][resistenze] indexate valore;
+        #list gmcp[char][magie][resistenze] order;
+        #loop {1} {&{gmcp[char][magie][resistenze][]}} i {
+            #format {magia} {$ui_colors[magie][dash]- $ui_colors[magie][nome]%-35s$ui_colors[magie][duratat][defalut]%s%%} {$gmcp[char][magie][resistenze][$i][nome]} {$gmcp[char][magie][resistenze][$i][valore]};
+            #list dde_ui_rhs[tab][2][data] add {$magia}
+        };
+    };
+    #if {&gmcp[char][magie][immunita][] > 0}
+    {
+        #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][header]Immunita':};
+        #list gmcp[char][magie][immunita] indexate nome;
+        #list gmcp[char][magie][immunita] order;
+        #loop {1} {&{gmcp[char][magie][immunita][]}} i {
+            #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][dash]- $ui_colors[magie][nome]$gmcp[char][magie][immunita][$i][nome]}
+        };
+    };
+    #if {&gmcp[char][magie][suscettibilita][] > 0}
+    {
+        #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][header]Suscettibilita':};
+        #list gmcp[char][magie][suscettibilita] indexate nome;
+        #list gmcp[char][magie][suscettibilita] order;
+        #loop {1} {&{gmcp[char][magie][suscettibilita][]}} i {
+            #list dde_ui_rhs[tab][2][data] add {$ui_colors[magie][dash]- $ui_colors[magie][nome]$gmcp[char][magie][suscettibilita][$i][nome]}
+        };
+    };
+    #list dde_ui_rhs[tab][2][data] collapse {\n};
+};
+
+#alias {dde_ui_rhs_refresh_gruppo}
+{
+    #local riga {};
+    #list dde_ui_rhs[tab][3][data] clear;
+    #if {&gmcp[char][gruppo][gruppo][] > 0}
+    {
+        #list dde_ui_rhs[tab][3][data] add {$ui_colors[gruppo][header]Gruppo<g15>: $ui_colors[gruppo][nome][gruppo]$gmcp[char][gruppo][nome]};
+        #list gmcp[char][gruppo][gruppo] indexate nome;
+        #list gmcp[char][gruppo][gruppo] order;
+        #loop {1} {&{gmcp[char][gruppo][gruppo][]}} i {
+            #list dde_ui_rhs[tab][3][data] add {\x20};
+            #format riga {};
+            #if {$gmcp[char][gruppo][gruppo][$i][hp] > 75} {
+                #format {riga} {%s%%3d%%%<g15>PF} {$ui_colors[gruppo][pct][over]} {$gmcp[char][gruppo][gruppo][$i][hp]};
+            };
+            #elseif {$gmcp[char][gruppo][gruppo][$i][hp] > 50} {
+                #format {riga} {%s%%3d%%%<g15>PF} {$ui_colors[gruppo][pct][high]} {$gmcp[char][gruppo][gruppo][$i][hp]};
+            };
+            #elseif {$gmcp[char][gruppo][gruppo][$i][hp] > 25} {
+                #format {riga} {%s%%3d%%%<g15>PF} {$ui_colors[gruppo][pct][mid]} {$gmcp[char][gruppo][gruppo][$i][hp]};
+            };
+            #else {
+                #format {riga} {%s%%3d%%%<g15>PF} {$ui_colors[gruppo][pct][low]} {$gmcp[char][gruppo][gruppo][$i][hp]};
+            };
+            #if {$gmcp[char][gruppo][gruppo][$i][mana] > 75} {
+                #format {riga} {%s%s%%4d%%%<g15>Mn} {$riga} {$ui_colors[gruppo][pct][over]} {$gmcp[char][gruppo][gruppo][$i][mana]};
+            };
+            #elseif {$gmcp[char][gruppo][gruppo][$i][mana] > 50} {
+                #format {riga} {%s%s%%4d%%%<g15>Mn} {$riga} {$ui_colors[gruppo][pct][high]} {$gmcp[char][gruppo][gruppo][$i][mana]};
+            };
+            #elseif {$gmcp[char][gruppo][gruppo][$i][mana] > 25} {
+                #format {riga} {%s%s%%4d%%%<g15>Mn} {$riga} {$ui_colors[gruppo][pct][mid]} {$gmcp[char][gruppo][gruppo][$i][mana]};
+            };
+            #else {
+                #format {riga} {%s%s%%4d%%%<g15>Mn} {$riga} {$ui_colors[gruppo][pct][low]} {$gmcp[char][gruppo][gruppo][$i][mana]};
+            };
+            #if {$gmcp[char][gruppo][gruppo][$i][move] > 75} {
+                #format {riga} {%s%s%%4d%%%<g15>Mv} {$riga} {$ui_colors[gruppo][pct][over]} {$gmcp[char][gruppo][gruppo][$i][move]};
+            };
+            #elseif {$gmcp[char][gruppo][gruppo][$i][move] > 50} {
+                #format {riga} {%s%s%%4d%%%<g15>Mv} {$riga} {$ui_colors[gruppo][pct][high]} {$gmcp[char][gruppo][gruppo][$i][move]};
+            };
+            #elseif {$gmcp[char][gruppo][gruppo][$i][move] > 25} {
+                #format {riga} {%s%s%%4d%%%<g15>Mv} {$riga} {$ui_colors[gruppo][pct][mid]} {$gmcp[char][gruppo][gruppo][$i][move]};
+            };
+            #else {
+                #format {riga} {%s%s%%4d%%%<g15>Mv} {$riga} {$ui_colors[gruppo][pct][low]} {$gmcp[char][gruppo][gruppo][$i][move]};
+            };
+            #if {"$gmcp[char][gruppo][gruppo][$i][classe]"==""} {
+                #format {riga} {%s  %s} {$riga} {$ui_colors[gruppo][nome][mob]$gmcp[char][gruppo][gruppo][$i][nome]}
+            } {
+                #format {riga} {%s  %s} {$riga} {$ui_colors[gruppo][nome][pg]$gmcp[char][gruppo][gruppo][$i][nome]}
+            };
+            #list dde_ui_rhs[tab][3][data] add {$riga};
+            #if {&gmcp[char][gruppo][gruppo][$i][incantesimi][] > 0}
+            {
+                #list gmcp[char][gruppo][gruppo][$i][incantesimi] sort;
+                #format riga {%s} {$ui_colors[gruppo][incantesimi]  };
+                #loop {1} {&{gmcp[char][gruppo][gruppo][$i][incantesimi][]}} j {
+                    #format riga {%s %s} {$riga} {$gmcp[char][gruppo][gruppo][$i][incantesimi][$j]};
+                };
+                #list dde_ui_rhs[tab][3][data] add {$riga}
+            };
+        };
+    };
+    #list dde_ui_rhs[tab][3][data] collapse {\n};
+};
+
+#alias {dde_ui_rhs_refresh_memo}
+{
+    #local memo {};
+    #list dde_ui_rhs[tab][4][data] clear;
+    #local {m} {$gmcp[char][magie][memorizzare]};
+    #if {&gmcp[char][magie][memorizzazioni][] > 0}
+    {
+        #list gmcp[char][magie][memorizzazioni] indexate memorizzati;
+        #list gmcp[char][magie][memorizzazioni] order;
+        #list dde_ui_rhs[tab][4][data] add {$ui_colors[memo][header]Me St Incantesimo};
+        #loop {1} {&{gmcp[char][magie][memorizzazioni][]}} {i} {
+            #local {sp} {$gmcp[char][magie][memorizzazioni][$i]};
+            #if {$sp[memorizzati] > 0} {
+                #if {$sp[memorizzati] >= $m[per_tipo]} {
+                    #format {memo} {$ui_colors[memo][max]%%2d} {$sp[memorizzati]};
+                } {
+                    #format {memo} {$ui_colors[memo][memo]%%2d} {$sp[memorizzati]}
+                }
+            } {
+                #format {memo} {$ui_colors[memo][none]%%2d} {$sp[memorizzati]}
+            };
+            #if {$sp[in_studio] > 0} {
+                #format {memo} {%s $ui_colors[memo][studio]%%2d} {$memo} {$sp[in_studio]}
+            } {
+                #format {memo} {%s $ui_colors[memo][none]%%2d} {$memo} {$sp[in_studio]}
+            };
+            #format {memo} {%s $ui_colors[memo][nome]%s} {$memo} {$sp[nome]};
+            #list dde_ui_rhs[tab][4][data] add {$memo}
+        }
+    };
+    #if {&gmcp[char][magie][memorizzare][] > 0}
+    {
+        #format {memo} {$ui_colors[memo][header]Hai };
+        #if {$m[in_memoria] > 0}
+        {
+            #format {memo} {%s%s} {$memo} {$ui_colors[memo][memo]$m[in_memoria]}
+        } {
+            #format {memo} {%s%s} {$memo} {$ui_colors[memo][none]$m[in_memoria]}
+        };
+        #format {memo} {%%s%%s} {$memo} {$ui_colors[memo][header]/$ui_colors[memo][memo]$m[in_totale]$ui_colors[memo][header] in memoria. Max $ui_colors[memo][memo]$m[per_tipo]$ui_colors[memo][header] per tipo.};
+        #list dde_ui_rhs[tab][4][data] add {$memo};
+        #if {$m[in_studio] > 0}
+        {
+            #list dde_ui_rhs[tab][4][data] add {$ui_colors[memo][header]Stai memorizzando $ui_colors[memo][studio]$m[in_studio]$ui_colors[memo][header]/$ui_colors[memo][studio]$m[per_studio]$ui_colors[memo][header].};
+        }
+    };
+    #list dde_ui_rhs[tab][4][data] collapse {\n}
+};

@@ -1,0 +1,65 @@
+#event {SESSION CONNECTED} {
+    #variable TELNET[IAC]  \xFF;
+    #variable TELNET[DONT] \xFE;
+    #variable TELNET[DO]   \xFD;
+    #variable TELNET[WONT] \xFC;
+    #variable TELNET[WILL] \xFB;
+    #variable TELNET[SB]   \xFA;
+    #variable TELNET[SE]   \xF0;
+    #variable TELNET[GMCP] \xC9;
+};
+
+#EVENT {IAC WILL GMCP} {
+    #info SYSTEM save;
+    #send {$TELNET[IAC]$TELNET[DO]$TELNET[GMCP]\};
+    #send {$TELNET[IAC]$TELNET[SB]$TELNET[GMCP]Core.Supports.Set [ "Room 1", "Room.Info 1", "Char 1", "Char.Skills 1", "Char.Items 1" ] $TELNET[IAC]$TELNET[SE]\}
+};
+
+#EVENT {IAC SB GMCP Char.Skills IAC SE}
+{
+    #variable gmcp[char][skills] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Name IAC SE}
+{
+    #variable gmcp[char][name] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Vitals IAC SE}
+{
+    #variable gmcp[char][vitals] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Magie IAC SE}
+{
+    #variable gmcp[char][magie] {%0}
+}
+
+#EVENT {IAC SB GMCP Char.Gruppo IAC SE}
+{
+    #variable gmcp[char][gruppo] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Classi IAC SE}
+{
+    #variable gmcp[char][classi] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Missione IAC SE}
+{
+    #variable gmcp[char][missione] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Esplorazione IAC SE}
+{
+    #variable gmcp[char][esplorazione] {%0}
+};
+
+#EVENT {IAC SB GMCP Char.Items IAC SE}
+{
+    #variable gmcp[char][items] {%0};
+    #nop Questo e' l'ULTIMO evento della lista, quindi a questo punto possiamo;
+    #nop andare e mostrare prompt e RHS.;
+    dde_ui_refresh_prompt;
+    dde_ui_rhs_reset
+};

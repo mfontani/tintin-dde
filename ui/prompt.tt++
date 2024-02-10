@@ -1,0 +1,209 @@
+#nop configura i colori:
+#var {prompt_colors} {
+    {n_a}       {<FF0F>}
+    {reset}     {<079><F818EB6>}
+    {end}       {<079><g15>}
+    {charname}  {<FFFFFA5>}
+    {charstato} {
+        {default}   {<F6272A4>}
+        {combatti}  {<FFF5555>}
+        {in_piedi}  {<FF8F8F2>}
+        {dormi}     {<FFF79C6>}
+        {seduto}    {<F8BE9FD>}
+    }
+    {hp} {
+        {cur} {<F69FF94>}
+        {max} {<F50FA7B>}
+    }
+    {mana} {
+        {cur} {<FD6ACFF>}
+        {max} {<FBD93F9>}
+    }
+    {move} {
+        {cur} {<FFF92DF>}
+        {max} {<FFF79C6>}
+    }
+    {tank} {
+        {over}  {<F2C2>}
+        {high}  {<FFC2>}
+        {mid}   {<FF82>}
+        {low}   {<FD22>}
+    }
+    {target} {
+        {over}  {<F2C2>}
+        {high}  {<FFC2>}
+        {mid}   {<FF82>}
+        {low}   {<FD22>}
+    }
+};
+
+#alias {dde_ui_refresh_prompt} {
+    #screen clear bottom;
+    #format {prompt} {$prompt_colors[n_a]N/A>};
+    #line ignore #showme {$prompt_colors[reset]$prompt} {-2};
+    #if {"${gmcp[char][name][name]}"==""}
+    {
+        #return
+    };
+
+    #if {&{gmcp[char][gruppo][]}!=0} {
+        #format {prompt} {<F292>&{gmcp[char][gruppo][gruppo][]} in <g20>$gmcp[char][gruppo][nome]<F292>:<g23>};
+        #if {&{gmcp[char][gruppo][gruppo][]}>1} {
+            #loop {1} {&{gmcp[char][gruppo][gruppo][]}} i {
+                #if {"$gmcp[char][gruppo][gruppo][$i][nome]"=="$gmcp[char][name][name]"} {
+                    #format {prompt} {$prompt $prompt_colors[charname]Tu$prompt_colors[reset]/$prompt_colors[hp][cur]$gmcp[char][gruppo][gruppo][$i][hp]<g25>%}
+                } {
+                    #format {prompt} {$prompt $prompt_colors[charname]$gmcp[char][gruppo][gruppo][$i][nome]$prompt_colors[reset]/$prompt_colors[hp][cur]$gmcp[char][gruppo][gruppo][$i][hp]<g25>%}
+                }
+            }
+        } {
+            #if {"$gmcp[char][gruppo][gruppo][1][nome]"=="$gmcp[char][name][name]"} {
+                #format {prompt} {$prompt $prompt_colors[charname]Tu$prompt_colors[reset]/$prompt_colors[hp][cur]$gmcp[char][gruppo][gruppo][1][hp]<g25>%}
+            } {
+                #format {prompt} {$prompt $prompt_colors[charname]$gmcp[char][gruppo][gruppo][1][nome]$prompt_colors[reset]/$prompt_colors[hp][cur]$gmcp[char][gruppo][gruppo][1][hp]<g25>%}
+            }
+        }
+    };
+    #else {
+        #format {prompt} {<F922>Non in gruppo.};
+    };
+    #line ignore #showme {$prompt_colors[reset]╭ $prompt$prompt_colors[end]} {-4};
+
+    #format {prompt} {<F922>Nessuna magia.<g23>};
+    #if {&gmcp[char][magie][incantesimi][] > 0}
+    {
+        #if {&gmcp[char][magie][incantesimi][] == 1}
+        {
+            #format {prompt} {<F090>1 Magia};
+        } {
+            #format {prompt} {<F090>&{gmcp[char][magie][incantesimi][]} Magie};
+        };
+        #list gmcp[char][magie][incantesimi] indexate durata;
+        #list gmcp[char][magie][incantesimi] order;
+        #format {prompt} {$prompt$prompt_colors[reset]:};
+        #local nice_magie {};
+        #loop {1} {&{gmcp[char][magie][incantesimi][]}} {i} {
+            #local magia {};
+            #if {$gmcp[char][magie][incantesimi][$i][durata] < $screen_right_width} {
+                #format {magia} {<F922>$gmcp[char][magie][incantesimi][$i][durata]};
+            };
+            #else {
+                #format {magia} {<g18>$gmcp[char][magie][incantesimi][$i][durata]};
+            };
+            #format {magia} {$magia<g18>/$gmcp[char][magie][incantesimi][$i][nome]};
+            #list {nice_magie} {add} {$magia};
+        };
+        #list {nice_magie} {collapse} { };
+        #format {prompt} {$prompt $nice_magie};
+        #unvar i;
+    };
+    #line ignore #showme {$prompt_colors[reset]├ $prompt$prompt_colors[end]} {-3};
+
+    #format {prompt} {$prompt_colors[charname]$gmcp[char][name][name]$prompt_colors[reset]:};
+    #if {&{gmcp[char][vitals][stato]}!=1}
+    {
+        #if {"$gmcp[char][vitals][stato]" == "In Piedi"} {
+            #format {prompt} {$prompt ($prompt_colors[charstato][in_piedi]$gmcp[char][vitals][stato]$prompt_colors[reset])};
+        };
+        #elseif {"$gmcp[char][vitals][stato]" == "Combatti"} {
+            #format {prompt} {$prompt ($prompt_colors[charstato][combatti]$gmcp[char][vitals][stato]$prompt_colors[reset])};
+        };
+        #elseif {"$gmcp[char][vitals][stato]" == "Dormi" || "$gmcp[char][vitals][stato]" == "Riposi"} {
+            #format {prompt} {$prompt ($prompt_colors[charstato][dormi]$gmcp[char][vitals][stato]$prompt_colors[reset])};
+        };
+        #elseif {"$gmcp[char][vitals][stato]" == "Seduto"} {
+            #format {prompt} {$prompt ($prompt_colors[charstato][seduto]$gmcp[char][vitals][stato]$prompt_colors[reset])};
+        };
+        #else {
+            #format {prompt} {$prompt ($prompt_colors[charstato][default]$gmcp[char][vitals][stato]$prompt_colors[reset])};
+        };
+    };
+    #if {&{gmcp[char][vitals][hp]}!=1 && &{gmcp[char][vitals][maxhp]}!=1}
+    {
+        #format {prompt} {$prompt Pf:$prompt_colors[hp][cur]$gmcp[char][vitals][hp]$prompt_colors[reset]/$prompt_colors[hp][max]$gmcp[char][vitals][maxhp]$prompt_colors[reset]}
+    };
+    #if {&{gmcp[char][vitals][mana]}!=1 && &{gmcp[char][vitals][maxmana]}!=1}
+    {
+        #format {prompt} {$prompt Mn:$prompt_colors[mana][cur]$gmcp[char][vitals][mana]$prompt_colors[reset]/$prompt_colors[mana][max]$gmcp[char][vitals][maxmana]$prompt_colors[reset]}
+    };
+    #if {&{gmcp[char][vitals][move]}!=1 && &{gmcp[char][vitals][maxmove]}!=1}
+    {
+        #format {prompt} {$prompt Mv:$prompt_colors[move][cur]$gmcp[char][vitals][move]$prompt_colors[reset]/$prompt_colors[move][max]$gmcp[char][vitals][maxmove]$prompt_colors[reset]}
+    };
+    #if {&{gmcp[char][vitals][tank]}!=0 && &{gmcp[char][vitals][tankpct]}!=0}
+    {
+        #format {prompt} {$prompt $prompt_colors[charname]$gmcp[char][vitals][tank]$prompt_colors[reset]:};
+        #if {$gmcp[char][vitals][tankpct] > 75} {
+            #format {prompt} {$prompt$prompt_colors[tank][over]$gmcp[char][vitals][tankpct]};
+        };
+        #elseif {$gmcp[char][vitals][tankpct] > 50} {
+            #format {prompt} {$prompt$prompt_colors[tank][high]$gmcp[char][vitals][tankpct]};
+        };
+        #elseif {$gmcp[char][vitals][tankpct] > 25} {
+            #format {prompt} {$prompt$prompt_colors[tank][mid]$gmcp[char][vitals][tankpct]};
+        };
+        #else {
+            #format {prompt} {$prompt$prompt_colors[tank][low]$gmcp[char][vitals][tankpct]};
+        };
+        #format {prompt} {$prompt$prompt_colors[reset]%};
+    };
+    #if {&{gmcp[char][vitals][target]}!=0 && &{gmcp[char][vitals][targetpct]}!=0}
+    {
+        #format {prompt} {$prompt $prompt_colors[charname]$gmcp[char][vitals][target]$prompt_colors[reset]:};
+        #if {$gmcp[char][vitals][targetpct] > 75} {
+            #format {prompt} {$prompt$prompt_colors[target][over]$gmcp[char][vitals][targetpct]};
+        };
+        #elseif {$gmcp[char][vitals][targetpct] > 50} {
+            #format {prompt} {$prompt$prompt_colors[target][high]$gmcp[char][vitals][targetpct]};
+        };
+        #elseif {$gmcp[char][vitals][targetpct] > 25} {
+            #format {prompt} {$prompt$prompt_colors[target][mid]$gmcp[char][vitals][targetpct]};
+        };
+        #else {
+            #format {prompt} {$prompt$prompt_colors[target][low]$gmcp[char][vitals][targetpct]};
+        };
+        #format {prompt} {$prompt$prompt_colors[reset]%};
+    };
+    #if {&{gmcp[char][vitals][favori]}!=1}
+    {
+        #format {prompt} {$prompt Fv:$gmcp[char][vitals][favori]};
+    };
+    #if {&{gmcp[char][vitals][allineamento]}!=1}
+    {
+        #format {prompt} {$prompt Al:$gmcp[char][vitals][allineamento]};
+    };
+    #if {&{gmcp[char][vitals][exp_livello]}!=1 && $gmcp[char][vitals][exp_livello] != 0}
+    {
+        #format {prompt} {$prompt Xp:$gmcp[char][vitals][exp_livello]};
+    };
+    #if {&{gmcp[char][vitals][gold]}!=1}
+    {
+        #format {prompt} {$prompt G:$gmcp[char][vitals][gold]};
+    };
+    #if {&{gmcp[char][vitals][periodo]}!=1}
+    {
+        #format {prompt} {$prompt H:$gmcp[char][vitals][periodo]};
+    };
+    #if {&{gmcp[char][vitals][lag]}!=1}
+    {
+        #format {prompt} {$prompt L:$gmcp[char][vitals][lag]};
+    };
+    #if {"$gmcp[char][vitals][_wait]" != ""}
+    {
+        #format {prompt} {$prompt <FF0F>WAIT:$gmcp[char][vitals][_wait]};
+    };
+    #if {"$gmcp[char][vitals][_idle]" != ""}
+    {
+        #format {prompt} {$prompt <FF0F>IDLE:$gmcp[char][vitals][_idle]};
+    };
+    #if {"$gmcp[char][vitals][room_vnum]"!=""}
+    {
+        #format {prompt} {$prompt <g08>RVNUM:$gmcp[char][vitals][room_vnum]};
+    };
+    #if {"$gmcp[char][vitals][room_flags]" != ""}
+    {
+        #format {prompt} {$prompt <g08>RFLAGS:$gmcp[char][vitals][room_flags]};
+    };
+    #line ignore #showme {$prompt_colors[reset]╰ $prompt$prompt_colors[end]} {-2};
+    #unvar prompt
+};

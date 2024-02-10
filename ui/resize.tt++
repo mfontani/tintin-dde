@@ -1,0 +1,7 @@
+#event {SCREEN RESIZE} {
+    comm_window_reset;
+    comm_window_draw_data $comm_window[active];
+    dde_ui_refresh_prompt;
+    dde_ui_rhs_reset;
+    #buffer refresh
+};
