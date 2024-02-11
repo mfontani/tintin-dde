@@ -1,0 +1,2 @@
+#variable {DDE_HOSTNAME}    {client.addemud.net};
+#variable {DDE_PORT}        {5000};

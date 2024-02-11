@@ -34,17 +34,17 @@
     };
 
     #format {msg} {$cmsg%-9s %s: %s} {$canale<g15>:} {$da_a} {$cmsg$testo<g15>};
-    comm_window_show all $msg;
+    ...comm_window_show all $msg;
     #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa"}
     {
-        comm_window_show msg $msg
+        ...comm_window_show msg $msg
     };
     #elseif {"$canale" == "gruppo"}
     {
-        comm_window_show grp $msg
+        ...comm_window_show grp $msg
     };
     #else
     {
-        comm_window_show pub $msg
+        ...comm_window_show pub $msg
     };
 };

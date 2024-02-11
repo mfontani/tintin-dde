@@ -1,0 +1,26 @@
+#nop Alla connessione E ri-connessione, reimposta la UI:;
+
+#class dde_ui_reset open;
+
+#alias {...dde_ui_reset} {
+    #split 6 3 0 $screen_right_width 1;
+    ...comm_window_reset;
+    ...comm_window_draw_data $comm_window[active];
+    ...dde_ui_refresh_prompt;
+    ...dde_ui_rhs_reset
+};
+
+#action {^Benvenuto in Dei Delle Ere....} {
+    ...dde_ui_reset
+};
+
+#action {^Riconnessione.$} {
+    ...dde_ui_reset
+};
+
+#event {SCREEN RESIZE} {
+    ...dde_ui_reset;
+    #buffer refresh
+};
+
+#class dde_ui_reset close;

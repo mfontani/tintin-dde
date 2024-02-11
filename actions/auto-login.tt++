@@ -1,0 +1,8 @@
+#nop Auto-log-in:;
+#action {^Inserisci il tuo account o scrivi} {$DDE_ACCOUNT_NAME};
+#action {^Password:} {$DDE_ACCOUNT_PASSWORD};
+#action {^%sPREMI 'INVIO'} {\n};
+#action {^Premi invio...} {\n};
+#action {^Premi [INVIO]} {\n};
+
+#action {^1) Entra nel MUD} {1};

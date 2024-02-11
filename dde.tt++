@@ -1,49 +1,26 @@
-#nop Configura:
-#variable {screen_right_width} {50};
-#variable {DDE_HOSTNAME} {client.addemud.net};
-#variable {DDE_PORT} {5000};
-#nop Configura in .creds.tt++:
+#nop Configurazione Base:;
+#read {config/host.tt++};
+#read {config/ui.tt++};
+
+#nop Metti override in .creds.tt++, specialmente i seguenti:;
 #nop #variable {DDE_ACCOUNT_NAME} {...};
 #nop #variable {DDE_ACCOUNT_PASSWORD} {...};
+#nop E questi, se li vuoi...:;
 #nop #action {^Cosa vuoi fare oggi?} {NomePG};
 #nop #action {^1) Entra nel MUD} {1};
 #read {.creds.tt++};
 
 #config mouse on;
-#screen clear top;
 #config {CHARSET} {UTF-8};
 
-#action {^Inserisci il tuo account o scrivi} {$DDE_ACCOUNT_NAME};
-#action {^Password:} {$DDE_ACCOUNT_PASSWORD};
-#action {^%sPREMI 'INVIO'} {\n};
-#action {^Premi invio...} {\n};
-#action {^Premi [INVIO]} {\n};
-
-#action {^1) Entra nel MUD} {1};
-
+#read {actions/auto-login.tt++};
 #read {ui/comm_window.tt++};
-
-#action {^Benvenuto in Dei Delle Ere....} {
-    #split 6 3 0 $screen_right_width 1;
-    comm_window_reset;
-    comm_window_draw_data $comm_window[active];
-    dde_ui_refresh_prompt;
-    dde_ui_rhs_reset
-};
-
-#action {^Riconnessione.$} {
-    #split 6 3 0 $screen_right_width 1;
-    comm_window_reset;
-    comm_window_draw_data $comm_window[active];
-    dde_ui_refresh_prompt;
-    dde_ui_rhs_reset
-};
 
 #read {actions/gmcp.tt++};
 #read {actions/comm.tt++};
 #read {ui/prompt.tt++};
 #read {ui/rhs.tt++};
-#read {ui/resize.tt++};
+#read {actions/ui.tt++};
 
 #session {dde} {$DDE_HOSTNAME} {$DDE_PORT};
 

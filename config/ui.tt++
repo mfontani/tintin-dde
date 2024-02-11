@@ -1,0 +1,148 @@
+#nop Larghezza della parte RHS dello schermo, dove stanno i tabs:;
+#variable {screen_right_width} {50};
+
+#nop Configurazione dei colori usati per il PROMPT, le tre righe in basso:;
+#var {prompt_colors} {
+    {n_a}       {<FF0F>}
+    {reset}     {<079><F818EB6>}
+    {end}       {<079><g15>}
+    {charname}  {<FFFFFA5>}
+    {charstato} {
+        {default}   {<F6272A4>}
+        {combatti}  {<FFF5555>}
+        {in_piedi}  {<FF8F8F2>}
+        {dormi}     {<FFF79C6>}
+        {seduto}    {<F8BE9FD>}
+    }
+    {hp} {
+        {cur} {<F69FF94>}
+        {max} {<F50FA7B>}
+    }
+    {mana} {
+        {cur} {<FD6ACFF>}
+        {max} {<FBD93F9>}
+    }
+    {move} {
+        {cur} {<FFF92DF>}
+        {max} {<FFF79C6>}
+    }
+    {tank} {
+        {over}  {<F2C2>}
+        {high}  {<FFC2>}
+        {mid}   {<FF82>}
+        {low}   {<FD22>}
+    }
+    {target} {
+        {over}  {<F2C2>}
+        {high}  {<FFC2>}
+        {mid}   {<FF82>}
+        {low}   {<FD22>}
+    }
+};
+
+#nop Configurazione della finestra di comunicazione, che sta sopra:;
+#VARIABLE {comm_window}
+{
+    {active} {all}
+    {botcol} {-$screen_right_width}
+    {botrow} {6}
+    {offset} {1}
+    {tab}
+    {
+        {all} {}
+        {grp} {}
+        {msg} {}
+        {pub} {}
+    }
+    {topcol} {1}
+    {toprow} {1}
+    {unread}
+    {
+        {all} {0}
+        {grp} {0}
+        {msg} {0}
+        {pub} {0}
+    }
+};
+
+#nop Tabs della finestra a destra:;
+#VARIABLE {dde_ui_rhs}
+{
+    {active} {0}
+    {toprow} {1}
+    {topcol} {-$screen_right_width}
+    {botrow} {-5}
+    {botcol} {-1}
+    {tab}
+    {
+        {0} {
+            {name} {Equip}
+            {data} {}
+        }
+        {1} {
+            {name} {Inv}
+            {data} {}
+        }
+        {2} {
+            {name} {Magie}
+            {data} {}
+        }
+        {3} {
+            {name} {Gruppo}
+            {data} {}
+        }
+        {4} {
+            {name} {Memo}
+            {data} {}
+        }
+    }
+};
+
+
+#nop Colori per la finestra a destra, RHS, con tabs:;
+#var {ui_colors} {
+    {tab} {
+        {active}   {<FFFFFA5>}
+        {empty}    {<F6272A4>}
+        {inactive} {<F8BE9FD>}
+    }
+    {magie} {
+        {header} {<FF1FA8C>}
+        {none}   {<g07>}
+        {dash}   {<g05>}
+        {nome}   {<g23>}
+        {durata} {
+            {bassa}     {<F922>}
+            {default}   {<g18>}
+        }
+    }
+    {memo} {
+        {header} {<FF1FA8C>}
+        {none}   {<g07>}
+        {nome}   {<g23>}
+        {studio} {<F8BE9FD>}
+        {memo}   {<FBD93F9>}
+        {max}    {<FFF79C6>}
+    }
+    {gruppo} {
+        {header} {<FBD93F9>}
+        {nome} {
+            {pg}        {<FFFFFA5>}
+            {mob}       {<F9C9EB5>}
+            {gruppo}    {<FD6ACFF>}
+            {classe}    {<FFF79C6>}
+        }
+        {incantesimi} {<F8BE9FD>}
+        {pct} {
+            {over}  {<F2C2>}
+            {high}  {<FFC2>}
+            {mid}   {<FF82>}
+            {low}   {<FD22>}
+        }
+    }
+    {inv} {
+        {idx}   {<g08>}
+        {qty}   {<g12>}
+        {obj}   {<g15>}
+    }
+};

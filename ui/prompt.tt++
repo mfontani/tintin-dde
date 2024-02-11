@@ -1,43 +1,4 @@
-#nop configura i colori:
-#var {prompt_colors} {
-    {n_a}       {<FF0F>}
-    {reset}     {<079><F818EB6>}
-    {end}       {<079><g15>}
-    {charname}  {<FFFFFA5>}
-    {charstato} {
-        {default}   {<F6272A4>}
-        {combatti}  {<FFF5555>}
-        {in_piedi}  {<FF8F8F2>}
-        {dormi}     {<FFF79C6>}
-        {seduto}    {<F8BE9FD>}
-    }
-    {hp} {
-        {cur} {<F69FF94>}
-        {max} {<F50FA7B>}
-    }
-    {mana} {
-        {cur} {<FD6ACFF>}
-        {max} {<FBD93F9>}
-    }
-    {move} {
-        {cur} {<FFF92DF>}
-        {max} {<FFF79C6>}
-    }
-    {tank} {
-        {over}  {<F2C2>}
-        {high}  {<FFC2>}
-        {mid}   {<FF82>}
-        {low}   {<FD22>}
-    }
-    {target} {
-        {over}  {<F2C2>}
-        {high}  {<FFC2>}
-        {mid}   {<FF82>}
-        {low}   {<FD22>}
-    }
-};
-
-#alias {dde_ui_refresh_prompt} {
+#alias {...dde_ui_refresh_prompt} {
     #screen clear bottom;
     #format {prompt} {$prompt_colors[n_a]N/A>};
     #line ignore #showme {$prompt_colors[reset]$prompt} {-2};

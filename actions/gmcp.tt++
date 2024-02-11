@@ -60,6 +60,6 @@
     #variable gmcp[char][items] {%0};
     #nop Questo e' l'ULTIMO evento della lista, quindi a questo punto possiamo;
     #nop andare e mostrare prompt e RHS.;
-    dde_ui_refresh_prompt;
-    dde_ui_rhs_reset
+    ...dde_ui_refresh_prompt;
+    ...dde_ui_rhs_reset
 };
