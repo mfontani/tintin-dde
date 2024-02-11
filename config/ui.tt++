@@ -76,7 +76,7 @@
     {tab}
     {
         {0} {
-            {name} {Equip}
+            {name} {Eq}
             {data} {}
         }
         {1} {
@@ -84,15 +84,19 @@
             {data} {}
         }
         {2} {
-            {name} {Magie}
+            {name} {Mag}
             {data} {}
         }
         {3} {
-            {name} {Gruppo}
+            {name} {Gru}
             {data} {}
         }
         {4} {
-            {name} {Memo}
+            {name} {Mem}
+            {data} {}
+        }
+        {5} {
+            {name} {Mis}
             {data} {}
         }
     }

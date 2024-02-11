@@ -11,6 +11,7 @@
     ...dde_ui_rhs_refresh_magie;
     ...dde_ui_rhs_refresh_gruppo;
     ...dde_ui_rhs_refresh_memo;
+    ...dde_ui_rhs_refresh_missione;
     #draw tile $dde_ui_rhs[toprow]+1 $dde_ui_rhs[topcol]+1 $dde_ui_rhs[botrow]-1 $dde_ui_rhs[botcol]-1 $dde_ui_rhs[tab][%1][data];
     ...dde_ui_rhs_draw_tabs
 };
@@ -40,7 +41,7 @@
         {
             #format short $ui_colors[tab][inactive]%.8s $dde_ui_rhs[tab][$index][name]
         };
-        #line ignore #showme {\e]68;2;TAB;...dde_ui_rhs_tab_click $index\a\e[4;24m$short\e[24m} {$dde_ui_rhs[toprow]} {$dde_ui_rhs[topcol] + 2 + $index * 9}
+        #line ignore #showme {\e]68;2;TAB;...dde_ui_rhs_tab_click $index\a\e[4;24m$short\e[24m} {$dde_ui_rhs[toprow]} {$dde_ui_rhs[topcol] + 3 + $index * 8}
     }
 };
 
@@ -323,4 +324,60 @@
         }
     };
     #list dde_ui_rhs[tab][4][data] collapse {\n}
+};
+
+#alias {...dde_ui_rhs_refresh_missione}
+{
+    #list dde_ui_rhs[tab][5][data] clear;
+    #if {"$gmcp[char][missione]" != ""} {
+        #list dde_ui_rhs[tab][5][data] add {<g15>Hai $gmcp[char][missione][punti] punti missione.};
+        #if {"$gmcp[char][missione][questor]" != ""} {
+            #list dde_ui_rhs[tab][5][data] add      {<g15>Sei in missione!};
+            #list dde_ui_rhs[tab][5][data] add      {<g12>Mandante<g09>: <g15>$gmcp[char][missione][questor]};
+            #list dde_ui_rhs[tab][5][data] add      {<g12>Scadenza<g09>: <g15>$gmcp[char][missione][scadenza]};
+            #if {"$gmcp[char][missione][oggetto]" != ""} {
+                #list dde_ui_rhs[tab][5][data] add  {<g12>Oggetto<g09>:  <g15>$gmcp[char][missione][oggetto]};
+                #list dde_ui_rhs[tab][5][data] add  {<g12>Zona<g09>:     <g15>$gmcp[char][missione][zona]};
+                #list dde_ui_rhs[tab][5][data] add  {<g12>Stanza<g09>:   <g15>$gmcp[char][missione][stanza]};
+            };
+            #elseif {"$gmcp[char][missione][mob]" != ""} {
+                #list dde_ui_rhs[tab][5][data] add  {<g12>Uccidere<g09>: <g15>$gmcp[char][missione][mob]};
+                #list dde_ui_rhs[tab][5][data] add  {<g12>Stanza<g09>:   <g15>$gmcp[char][missione][stanza]};
+                #list dde_ui_rhs[tab][5][data] add  {<g12>Zona<g09>:     <g15>$gmcp[char][missione][zona]};
+            };
+            #elseif {"$gmcp[char][missione][completa]" != "false"} {
+                #list dde_ui_rhs[tab][5][data] add  {<g15>Completata! <g12>Torna da <g15>$gmcp[char][missione][questor]!};
+            };
+        } {
+            #list dde_ui_rhs[tab][5][data] add {<g07>Nessuna missione in corso.<099>};
+            #if {$gmcp[char][missione][prossima] > 0} {
+                #list dde_ui_rhs[tab][5][data] add {<g12>Prossima missione tra <g15>$gmcp[char][missione][prossima]<g12>.<099>};
+            } {
+                #list dde_ui_rhs[tab][5][data] add {<g15>Puoi chiedere una nuova missione.<099>};
+            }
+        }
+    } {
+        #list dde_ui_rhs[tab][5][data] add {<g07>Nessuna dato missione ricevuto via GMCP.<099>}
+    };
+    #local pad {};
+    #math pad {$screen_right_width / 2};
+    #local sep {};
+    #format {sep} {\n$ui_colors[tab][active]%+${pad}s<099>\n} {-*-};
+    #list dde_ui_rhs[tab][5][data] add {$sep};
+    #if {"$gmcp[char][esplorazione]" != ""} {
+        #list dde_ui_rhs[tab][5][data] add  {<g15>Stai esplorando!};
+        #list dde_ui_rhs[tab][5][data] add  {<g12>Mandante<g09>: <g15>$gmcp[char][esplorazione][questor]};
+        #list dde_ui_rhs[tab][5][data] add  {<g12>Stato<g09>:    <g15>$gmcp[char][esplorazione][stato]};
+        #list dde_ui_rhs[tab][5][data] add  {<g12>Scadenza<g09>: <g15>$gmcp[char][esplorazione][scadenza]};
+        #local obiettivo {$gmcp[char][esplorazione][obiettivo]};
+        #replace obiettivo {\\n} { };
+        #replace obiettivo {$e} {o};
+        #replace obiettivo {&w} { };
+        #replace obiettivo {&D} { };
+        #replace obiettivo {  } { };
+        #list dde_ui_rhs[tab][5][data] add  {<g13>$obiettivo.}
+    } {
+        #list dde_ui_rhs[tab][5][data] add {<g07>Nessuna esplorazione in corso.<g15>}
+    };
+    #list dde_ui_rhs[tab][5][data] collapse {\n}
 };
