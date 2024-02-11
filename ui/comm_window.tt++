@@ -34,7 +34,7 @@
 
 #ALIAS {...comm_window_draw_data}
 {
-    #draw tile $comm_window[toprow]+1 $comm_window[topcol]+1 $comm_window[botrow]-1 $comm_window[botcol]-1 $comm_window[tab][%1][-$comm_window[offset]-10..-$comm_window[offset]];
+    #draw tile $comm_window[toprow]+1 $comm_window[topcol]+1 $comm_window[botrow]-1 $comm_window[botcol]-2 $comm_window[tab][%1][-$comm_window[offset]-10..-$comm_window[offset]];
     ...comm_window_draw_tabs
 };
 
@@ -54,7 +54,7 @@
 
 #ALIAS {...comm_window_draw_tabs}
 {
-    #draw green rounded box $comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol];
+    #draw green rounded box $comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol]-1;
     #local short {};
     #local index {};
     #loop {1} {&comm_window[tab][]} {index}
