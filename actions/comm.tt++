@@ -2,9 +2,9 @@
 {
     #variable gmcp[channel] {%0};
     #local text {%0};
-    #replace {$text[testo]} {\r} {};
-    #replace {$text[testo]} {\n} {};
     #local {testo} {$text[testo]<g15>};
+    #replace testo {\\r} {};
+    #replace testo {\\n} {};
     #local {canale} {$text[canale]};
     #local {da_a} {};
     #if {"$text[soggetto]"!=""} {
