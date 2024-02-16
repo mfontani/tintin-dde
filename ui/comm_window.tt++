@@ -6,7 +6,9 @@
 
 #ALIAS {...comm_window_scroll_up}
 {
-    #if {$comm_window[offset] < &comm_window[tab][%0][]}
+    #local max_offset {};
+    #math max_offset {&comm_window[tab][$comm_window[active]][] - $comm_window[botrow] + 3};
+    #if {$comm_window[offset] < $max_offset}
     {
         #math comm_window[offset] $comm_window[offset] + 1;
         ...comm_window_draw_data $comm_window[active]
@@ -24,7 +26,7 @@
 
 #BUTTON {$comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol] SCROLLED MOUSE WHEEL UP}
 {
-    ...comm_window_scroll_up $comm_window[active]
+    ...comm_window_scroll_up
 };
 
 #BUTTON {$comm_window[toprow] $comm_window[topcol] $comm_window[botrow] $comm_window[botcol] SCROLLED MOUSE WHEEL DOWN}
