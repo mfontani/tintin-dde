@@ -149,6 +149,13 @@
     {
         #format {prompt} {$prompt L:$gmcp[char][vitals][lag]};
     };
+    #if {&{gmcp[char][vitals][potenza]}!=1}
+    {
+        #if {"$gmcp[char][classi][classi][1][classe]" == "Drahn%*"}
+        {
+            #format {prompt} {$prompt P:$gmcp[char][vitals][potenza]};
+        }
+    };
     #if {"$gmcp[char][vitals][_wait]" != ""}
     {
         #format {prompt} {$prompt <FF0F>WAIT:$gmcp[char][vitals][_wait]};
