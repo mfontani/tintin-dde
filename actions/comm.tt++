@@ -10,7 +10,7 @@
     #if {"$text[soggetto]"!=""} {
         #local {da_a} {da $text[soggetto]<g15>}
     };
-    #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa"} {
+    #if {"$canale" == "messaggio" || "$canale" == "sogno" || "$canale" == "dicoa" || "$canale" == "rispondi"} {
         #local {da_a} {$da_a a $text[oggetto]<g15>}
     };
     #if {"$canale" == "dico"} {
